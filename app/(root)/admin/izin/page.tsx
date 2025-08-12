@@ -15,6 +15,7 @@ import List from "@/components/ui/list";
 import { CustomPaginationLite } from "@/components/CustomPaginationLite";
 import { DataIzin } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import api from "@/lib/axios";
 
 export default function IzinPage() {
   const [izinData, setIzinData] = useState<DataIzin[]>([]);
@@ -28,9 +29,8 @@ export default function IzinPage() {
     const fetchIzin = async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/data/izin");
-        const json = await res.json();
-
+        const res = await api.get("izin");
+        const json = await res.data;
         const pending = json.pending || [];
         setIzinData(pending);
       } catch (error) {
@@ -48,26 +48,34 @@ export default function IzinPage() {
     try {
       const verification = accepted ? "disetujui" : "ditolak";
 
-      const res = await fetch("/api/data/izin/verify", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, verification }),
+      const res = await api.patch(`izin/${id}/verify`, {
+        terverifikasi: verification,
       });
+      const result = res.data;
 
-      const result = await res.json();
-      if (!res.ok || !result.success) {
+      if (
+        !result ||
+        result.message?.toLowerCase().includes("success") === false
+      ) {
         throw new Error(result?.error || "Gagal memverifikasi izin");
       }
 
-      toast.success("Izin berhasil diverifikasi");
+      toast.success(`Izin berhasil ${verification}`);
 
-      setIzinData((prev) => prev.filter((item) => item.id !== id));
-      setSelectedIzin(null);
+      setIzinData((prev) => {
+        const newData = prev.filter((item) => item.id !== id);
 
-      setCurrentPage((prev) => {
-        const newTotalPages = Math.ceil((izinData.length - 1) / limit);
-        return prev > newTotalPages ? Math.max(newTotalPages, 1) : prev;
+        setCurrentPage((prevPage) => {
+          const newTotalPages = Math.ceil(newData.length / limit);
+          return prevPage > newTotalPages
+            ? Math.max(newTotalPages, 1)
+            : prevPage;
+        });
+
+        return newData;
       });
+
+      setSelectedIzin(null);
     } catch (error: any) {
       console.error("Gagal verifikasi:", error);
       toast.error(error.message || "Gagal memverifikasi izin");
@@ -94,7 +102,11 @@ export default function IzinPage() {
             <List
               nama={item.user_id.name}
               kepentingan={item.jenis_izin.name}
-              tanggal={item.tanggal}
+              tanggal={`${formatTanggal(item.tanggal)}${
+                item.tanggal_akhir
+                  ? ` - ${formatTanggal(item.tanggal_akhir)}`
+                  : ""
+              }`}
               terverifikasi={
                 item.terverifikasi === null
                   ? "Pending"
@@ -134,7 +146,12 @@ export default function IzinPage() {
                 <strong>Alasan:</strong> {selectedIzin.jenis_izin.name}
               </p>
               <p>
-                <strong>Tanggal:</strong> {selectedIzin.tanggal}
+                <strong>Tanggal:</strong>{" "}
+                {`${formatTanggal(selectedIzin.tanggal)}${
+                  selectedIzin.tanggal_akhir
+                    ? ` - ${formatTanggal(selectedIzin.tanggal_akhir)}`
+                    : ""
+                }`}
               </p>
               <p>
                 <strong>Keterangan:</strong> {selectedIzin.keterangan}
@@ -174,4 +191,13 @@ export default function IzinPage() {
       </Dialog>
     </div>
   );
+}
+
+function formatTanggal(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 }

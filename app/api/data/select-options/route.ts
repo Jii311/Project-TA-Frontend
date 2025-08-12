@@ -1,4 +1,4 @@
-import { createAxiosWithAuth } from "@/lib/axiosAuth";
+import api from "@/lib/axios";
 import { NextResponse } from "next/server";
 
 const endpoints = {
@@ -19,15 +19,13 @@ const endpoints = {
 type EndpointKey = keyof typeof endpoints;
 
 export async function GET() {
-  const axios = await createAxiosWithAuth();
-
   try {
     const results: Record<string, { value: string; label: string }[]> = {};
 
     await Promise.all(
       Object.entries(endpoints).map(async ([key, endpoint]) => {
         try {
-          const res = await axios.get(endpoint);
+          const res = await api.get(endpoint);
           results[key] = res.data.map((item: any) => ({
             value: item.id?.toString() || "",
             label: item.name ?? "-",

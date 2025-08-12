@@ -41,19 +41,9 @@ export function WilayahSelector() {
   const [kelurahan, setKelurahan] = useState<Option[]>([]);
 
   useEffect(() => {
-    fetch("/api/wilayah/provinsi")
+    fetch("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json")
       .then((res) => res.json())
       .then((res) => setProvinsi(res));
-  }, []);
-
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("personal_form") || "{}");
-    if (stored.provinsi_id) setValue("provinsi_id", stored.provinsi_id);
-    if (stored.kabupaten_id) setValue("kabupaten_id", stored.kabupaten_id);
-    if (stored.kecamatan_id) setValue("kecamatan_id", stored.kecamatan_id);
-    if (stored.kelurahan_id) setValue("kelurahan_id", stored.kelurahan_id);
-
-    setTimeout(() => setIsRestoring(false), 300);
   }, []);
 
   useEffect(() => {
@@ -69,7 +59,9 @@ export function WilayahSelector() {
       return;
     }
 
-    fetch(`/api/wilayah/kabupaten/${provId}`)
+    fetch(
+      `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provId}.json`
+    )
       .then((res) => res.json())
       .then((res) => {
         setKabupaten(res);
@@ -94,7 +86,9 @@ export function WilayahSelector() {
       return;
     }
 
-    fetch(`/api/wilayah/kecamatan/${kabId}`)
+    fetch(
+      `https://www.emsifa.com/api-wilayah-indonesia/api/districts/${kabId}.json`
+    )
       .then((res) => res.json())
       .then((res) => {
         setKecamatan(res);
@@ -115,7 +109,9 @@ export function WilayahSelector() {
       return;
     }
 
-    fetch(`/api/wilayah/kelurahan/${kecId}`)
+    fetch(
+      `https://www.emsifa.com/api-wilayah-indonesia/api/villages/${kecId}.json`
+    )
       .then((res) => res.json())
       .then((res) => {
         setKelurahan(res);

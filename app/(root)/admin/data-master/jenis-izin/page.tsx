@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { jenisIzin } from "./columns";
 import { TableData } from "@/components/TableData";
+import api from "@/lib/axios";
 
 export default function JenisIzinPage() {
   const [data, setData] = useState<DataMaster[]>([]);
@@ -43,10 +44,8 @@ export default function JenisIzinPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("/api/data/data-master/jenis-izin", {
-        method: "GET",
-      });
-      const json = await res.json();
+      const res = await api.get("jenis_izin");
+      const json = await res.data;
       setData(json);
     } catch (err) {
       toast.error("Gagal fetch data jenis izin");
@@ -57,21 +56,17 @@ export default function JenisIzinPage() {
 
   const onSubmit = async (formData: DataMasterSchema) => {
     setIsSubmitting(true);
-    const method = id ? "PATCH" : "POST";
-    const url = id
-      ? `/api/data/data-master/jenis-izin/${id}`
-      : "/api/data/data-master/jenis-izin";
+    const method = id ? "patch" : "post";
+    const url = id ? `jenis_izin/${id}` : "jenis_izin";
 
     try {
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      if (method === "patch") {
+        await api.patch(url, formData);
+      } else {
+        await api.post(url, formData);
+      }
 
-      if (!res.ok) throw new Error("Failed to save data");
-
-      toast.success(`jenis izin berhasil ${id ? "diperbarui" : "ditambahkan"}`);
+      toast.success(`Jenis izin berhasil ${id ? "diperbarui" : "ditambahkan"}`);
       reset();
       await fetchData();
       setOpen(false);

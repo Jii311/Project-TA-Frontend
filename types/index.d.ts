@@ -78,6 +78,7 @@ export type DataIzin = {
   keterangan: string;
   bukti_foto: string | null;
   tanggal: string;
+  tanggal_akhir: string;
   terverifikasi: boolean | null;
 };
 

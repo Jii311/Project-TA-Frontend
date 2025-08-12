@@ -1,5 +1,6 @@
 "use client";
 
+import api from "@/lib/axios";
 import { useEffect, useState } from "react";
 
 interface OfficeLocation {
@@ -8,36 +9,17 @@ interface OfficeLocation {
   alamat: string;
 }
 
-interface Employee {
-  lokasi_kantor: { id: string; name: string; alamat: string } | null;
-}
-
 export const OfficeLocationCards = () => {
   const [locations, setLocations] = useState<OfficeLocation[]>([]);
-  const [employeeCounts, setEmployeeCounts] = useState<Record<string, number>>(
-    {}
-  );
 
   useEffect(() => {
     const fetchData = async () => {
-      const resLocations = await fetch("/api/data/data-master/lokasi-kantor");
-      const lokasiData: OfficeLocation[] = await resLocations.json();
+      const resLocations = await api.get("lokasi_kantor");
+      const lokasiData: OfficeLocation[] = resLocations.data;
       setLocations(lokasiData);
-
-      const resEmployees = await fetch("/api/data/karyawan");
-      const employeeData: Employee[] = await resEmployees.json();
 
       const counts: Record<string, number> = {};
       lokasiData.forEach((loc) => (counts[loc.id] = 0));
-
-      employeeData.forEach((emp) => {
-        const lokasiId = emp.lokasi_kantor?.id;
-        if (lokasiId && counts[lokasiId] !== undefined) {
-          counts[lokasiId] += 1;
-        }
-      });
-
-      setEmployeeCounts(counts);
     };
 
     fetchData();

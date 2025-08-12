@@ -36,6 +36,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import api from "@/lib/axios";
 
 export default function RegisterUserPage() {
   const router = useRouter();
@@ -49,7 +50,7 @@ export default function RegisterUserPage() {
   const form = useForm<FormSchema>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
-      karyawanId: "",
+      karyawan_id: "",
       name: "",
       email: "",
       password: "",
@@ -57,7 +58,7 @@ export default function RegisterUserPage() {
     mode: "onChange",
   });
 
-  const selectedKaryawanId = form.watch("karyawanId");
+  const selectedKaryawanId = form.watch("karyawan_id");
   const selectedKaryawan = karyawans.find((k) => k.id === selectedKaryawanId);
   const selectedKaryawanName = selectedKaryawan?.name || "Select Karyawan...";
 
@@ -65,19 +66,15 @@ export default function RegisterUserPage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/data/register-user", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const json = await res.json();
+        const [usersRes, karyawanRes] = await Promise.all([
+          api.get("user"),
+          api.get("karyawan"),
+        ]);
 
-        if (!json.success) throw new Error(json.error);
-
-        setKaryawans(json.karyawans);
-        setUsers(json.users);
+        setUsers(usersRes.data);
+        setKaryawans(karyawanRes.data);
       } catch (err) {
+        console.error("Gagal ambil data:", err);
         toast.error("Gagal ambil data");
       } finally {
         setLoading(false);
@@ -88,7 +85,7 @@ export default function RegisterUserPage() {
   }, []);
 
   const handleKaryawanSelect = (karyawan: DataKaryawan) => {
-    form.setValue("karyawanId", karyawan.id, { shouldValidate: true });
+    form.setValue("karyawan_id", karyawan.id, { shouldValidate: true });
     form.setValue("name", karyawan.name, { shouldValidate: true });
     form.setValue("email", karyawan.email, { shouldValidate: true });
     setSearchOpen(false);
@@ -98,24 +95,16 @@ export default function RegisterUserPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/data/register-user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await api.post("user", data);
 
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.error || "Gagal daftar user");
+      if (response.status >= 200 && response.status < 300) {
+        toast.success("User registered successfully");
+        form.reset();
+        setOpen(false);
+        router.refresh();
+      } else {
+        throw new Error(response.data?.message || "Gagal daftar user");
       }
-
-      toast.success("User registered successfully");
-      form.reset();
-      setOpen(false);
-      router.refresh();
     } catch (error: any) {
       console.error("Registration failed:", error.message);
       toast.error(error.message || "Registration failed");
@@ -200,9 +189,9 @@ export default function RegisterUserPage() {
                     </Command>
                   </PopoverContent>
                 </Popover>
-                {form.formState.errors.karyawanId && (
+                {form.formState.errors.karyawan_id && (
                   <p className="text-sm text-red-500">
-                    {form.formState.errors.karyawanId.message}
+                    {form.formState.errors.karyawan_id.message}
                   </p>
                 )}
               </div>

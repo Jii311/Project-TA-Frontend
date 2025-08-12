@@ -1,5 +1,6 @@
 "use client";
 
+import api from "@/lib/axios";
 import { DataMaster } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, Trash2 } from "lucide-react";
@@ -26,11 +27,9 @@ export const agama = ({
 
       const handleDelete = async () => {
         try {
-          const res = await fetch(`/api/data/data-master/agama/${data.id}`, {
-            method: "DELETE",
-          });
+          const res = await api.delete(`agama/${data.id}`);
 
-          if (!res.ok) throw new Error("Failed to delete");
+          if (!res.data) throw new Error("Failed to delete");
 
           toast.success("Agama deleted successfully");
           await fetchData();

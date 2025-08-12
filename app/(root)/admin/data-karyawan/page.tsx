@@ -6,6 +6,7 @@ import { DataKaryawan } from "@/types";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import api from "@/lib/axios";
 
 export default function Page() {
   const [karyawanData, setKaryawanData] = useState<DataKaryawan[]>([]);
@@ -15,9 +16,8 @@ export default function Page() {
     const fetchKaryawan = async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/data/karyawan");
-        const data = await res.json();
-        setKaryawanData(data);
+        const res = await api.get("/karyawan");
+        setKaryawanData(res.data);
       } catch (error) {
         console.error("Gagal fetch karyawan data:", error);
         toast.error("Gagal mengambil data karyawan");

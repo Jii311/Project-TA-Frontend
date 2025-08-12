@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { lokasiKerja } from "./columns";
 import { TableData } from "@/components/TableData";
+import api from "@/lib/axios";
 
 export default function LokasiKerjaPage() {
   const [data, setData] = useState<DataMaster[]>([]);
@@ -43,10 +44,8 @@ export default function LokasiKerjaPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("/api/data/data-master/lokasi-kerja", {
-        method: "GET",
-      });
-      const json = await res.json();
+      const res = await api.get("lokasi_kerja");
+      const json = await res.data;
       setData(json);
     } catch (err) {
       toast.error("Gagal fetch data lokasi kerja");
@@ -57,22 +56,18 @@ export default function LokasiKerjaPage() {
 
   const onSubmit = async (formData: DataMasterSchema) => {
     setIsSubmitting(true);
-    const method = id ? "PATCH" : "POST";
-    const url = id
-      ? `/api/data/data-master/lokasi-kerja/${id}`
-      : "/api/data/data-master/lokasi-kerja";
+    const method = id ? "patch" : "post";
+    const url = id ? `lokasi_kerja/${id}` : "lokasi_kerja";
 
     try {
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) throw new Error("Failed to save data");
+      if (method === "patch") {
+        await api.patch(url, formData);
+      } else {
+        await api.post(url, formData);
+      }
 
       toast.success(
-        `lokasi kerja berhasil ${id ? "diperbarui" : "ditambahkan"}`
+        `Lokasi kerja berhasil ${id ? "diperbarui" : "ditambahkan"}`
       );
       reset();
       await fetchData();

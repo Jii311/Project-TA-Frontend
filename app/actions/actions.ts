@@ -40,6 +40,8 @@ export async function credentialsSignin({
 }
 
 export async function handleSignOut() {
-  await signOut();
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  
   redirect("/login");
 }

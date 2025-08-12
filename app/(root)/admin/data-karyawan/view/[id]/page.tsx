@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { viewFieldGroups } from "@/lib/utils";
 import { DataKaryawan, DataAnak, SelectOptionMap } from "@/types";
+import api from "@/lib/axios";
 
 export default function Page() {
   const { id } = useParams();
@@ -21,14 +22,18 @@ export default function Page() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/data/karyawan/${id}`);
-        const json = await res.json();
+        const res = await api.get(`karyawan/${id}`);
+        console.log("RAW RESPONSE:", res.data);
 
-        if (!json.success) throw new Error(json.error || "Gagal ambil data");
+        const json = res.data;
 
-        setKaryawan(json.karyawan);
-        setAnak(json.anak || []);
-        setSelectOptions(json.selectOptions || {});
+        if (!json.success && json.success !== undefined) {
+          throw new Error(json.error || "Gagal ambil data");
+        }
+
+        setKaryawan(res.data);
+        setAnak(res.data.anaks || []);
+        setSelectOptions({});
       } catch (err) {
         console.error("Gagal ambil data:", err);
         toast.error("Gagal ambil data karyawan");

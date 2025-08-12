@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { agama } from "./columns";
 import { TableData } from "@/components/TableData";
+import api from "@/lib/axios";
 
 export default function AgamaPage() {
   const [data, setData] = useState<DataMaster[]>([]);
@@ -43,8 +44,8 @@ export default function AgamaPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("/api/data/data-master/agama", { method: "GET" });
-      const json = await res.json();
+      const res = await api.get("agama");
+      const json = await res.data;
       setData(json);
     } catch (err) {
       toast.error("Gagal fetch data agama");
@@ -55,19 +56,15 @@ export default function AgamaPage() {
 
   const onSubmit = async (formData: DataMasterSchema) => {
     setIsSubmitting(true);
-    const method = id ? "PATCH" : "POST";
-    const url = id
-      ? `/api/data/data-master/agama/${id}`
-      : "/api/data/data-master/agama";
+    const method = id ? "patch" : "post";
+    const url = id ? `agama/${id}` : "agama";
 
     try {
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) throw new Error("Failed to save data");
+      if (method === "patch") {
+        await api.patch(url, formData);
+      } else {
+        await api.post(url, formData);
+      }
 
       toast.success(`Agama berhasil ${id ? "diperbarui" : "ditambahkan"}`);
       reset();

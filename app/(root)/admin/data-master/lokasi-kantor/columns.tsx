@@ -1,5 +1,6 @@
 "use client";
 
+import api from "@/lib/axios";
 import { LokasiKantor } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, Trash2 } from "lucide-react";
@@ -26,14 +27,9 @@ export const lokasiKantor = ({
 
       const handleDelete = async () => {
         try {
-          const res = await fetch(
-            `/api/data/data-master/lokasi-kantor/${data.id}`,
-            {
-              method: "DELETE",
-            }
-          );
+          const res = await api.delete(`lokasi_kantor/${data.id}`);
 
-          if (!res.ok) throw new Error("Failed to delete");
+          if (!res.data) throw new Error("Failed to delete");
 
           toast.success("Lokasi Kantor deleted successfully");
           await fetchData();

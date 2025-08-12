@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { pendidikan } from "./columns";
 import { TableData } from "@/components/TableData";
+import api from "@/lib/axios";
 
 export default function PendidikanPage() {
   const [data, setData] = useState<DataMaster[]>([]);
@@ -43,10 +44,8 @@ export default function PendidikanPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("/api/data/data-master/pendidikan", {
-        method: "GET",
-      });
-      const json = await res.json();
+      const res = await api.get("pendidikan");
+      const json = await res.data;
       setData(json);
     } catch (err) {
       toast.error("Gagal fetch data pendidikan");
@@ -57,21 +56,18 @@ export default function PendidikanPage() {
 
   const onSubmit = async (formData: DataMasterSchema) => {
     setIsSubmitting(true);
-    const method = id ? "PATCH" : "POST";
-    const url = id
-      ? `/api/data/data-master/pendidikan/${id}`
-      : "/api/data/data-master/pendidikan";
+
+    const method = id ? "patch" : "post";
+    const url = id ? `pendidikan/${id}` : "pendidikan";
 
     try {
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      if (method === "patch") {
+        await api.patch(url, formData);
+      } else {
+        await api.post(url, formData);
+      }
 
-      if (!res.ok) throw new Error("Failed to save data");
-
-      toast.success(`pendidikan berhasil ${id ? "diperbarui" : "ditambahkan"}`);
+      toast.success(`Pendidikan berhasil ${id ? "diperbarui" : "ditambahkan"}`);
       reset();
       await fetchData();
       setOpen(false);
@@ -153,7 +149,10 @@ export default function PendidikanPage() {
       </div>
 
       <div className="h-full">
-        <TableData columns={pendidikan({ fetchData, handleEdit })} data={data} />
+        <TableData
+          columns={pendidikan({ fetchData, handleEdit })}
+          data={data}
+        />
       </div>
     </div>
   );

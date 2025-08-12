@@ -5,6 +5,7 @@ import { absensi } from "./columns";
 import { DataAbsensi } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PhotoDialog } from "@/components/PhotoDialog";
+import api from "@/lib/axios";
 
 function formatTime(datetime: string): string {
   const date = new Date(datetime);
@@ -53,10 +54,10 @@ export default function AbsensiPage() {
   useEffect(() => {
     const fetchAbsensi = async () => {
       try {
-        const res = await fetch("/api/data/absensi");
-        if (!res.ok) throw new Error("Gagal ambil data absensi");
+        const res = await api.get("absensi");
+        if (!res.data) throw new Error("Gagal ambil data absensi");
 
-        const rawData = await res.json();
+        const rawData = await res.data;
         const mappedData = rawData.map((item: any) => ({
           id: item.id,
           name: item.user_id?.name || "-",

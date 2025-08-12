@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import {
   Sidebar,
@@ -23,11 +23,17 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
-import { handleSignOut } from "@/app/actions/actions";
 import { Button } from "./ui/button";
 
 const CustomSideBar = () => {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSignOut = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    router.push("/login");
+  };
 
   return (
     <Sidebar>
@@ -104,15 +110,14 @@ const CustomSideBar = () => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <form action={handleSignOut}>
-          <Button
-            type="submit"
-            className="flex w-full justify-start shadow-none gap-2.5 p-3 mb-5 text-[1rem] rounded-lg transition font-semibold bg-transparent text-[#F05151]"
-          >
-            <LogOut className="size-[24px]" />
-            Log Out
-          </Button>
-        </form>
+        <Button
+          type="button"
+          onClick={handleSignOut}
+          className="flex w-full justify-start shadow-none gap-2.5 p-3 mb-5 text-[1rem] rounded-lg transition font-semibold bg-transparent text-[#F05151]"
+        >
+          <LogOut className="size-[24px]" />
+          Log Out
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );

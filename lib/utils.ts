@@ -140,6 +140,11 @@ export const editFieldGroups: { title: string; fields: FieldConfig[] }[] = [
         type: "select",
         required: true,
       },
+    ],
+  },
+  {
+    title: "Data Pekerjaan",
+    fields: [
       {
         label: "Mulai Tugas",
         name: "mulai_tugas",

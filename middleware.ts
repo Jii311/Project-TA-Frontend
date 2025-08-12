@@ -6,26 +6,26 @@ const protectedRoutes = ["/admin"];
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (
-    !protectedRoutes.some((route) => pathname.startsWith(route)) &&
-    pathname !== "/login"
-  ) {
-    return NextResponse.next();
-  }
+  // if (
+  //   !protectedRoutes.some((route) => pathname.startsWith(route)) &&
+  //   pathname !== "/login"
+  // ) {
+  //   return NextResponse.next();
+  // }
 
-  const session = await auth();
-  const isLoggedin = !!session?.user;
+  // const session = await auth();
+  // const isLoggedin = !!session?.user;
 
-  if (
-    !isLoggedin &&
-    protectedRoutes.some((route) => pathname.startsWith(route))
-  ) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
+  // if (
+  //   !isLoggedin &&
+  //   protectedRoutes.some((route) => pathname.startsWith(route))
+  // ) {
+  //   return NextResponse.redirect(new URL("/login", req.url));
+  // }
 
-  if (isLoggedin && pathname === "/login") {
-    return NextResponse.redirect(new URL("/admin", req.url));
-  }
+  // if (isLoggedin && pathname === "/login") {
+  //   return NextResponse.redirect(new URL("/admin", req.url));
+  // }
 
   return NextResponse.next();
 }

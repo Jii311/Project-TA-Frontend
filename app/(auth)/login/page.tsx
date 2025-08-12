@@ -12,7 +12,6 @@ import { authFormSchema } from "@/lib/zod";
 import LoginInput from "@/components/LoginInput";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 
 export default function Login() {
   const [globalError, setGlobalError] = useState<{
@@ -32,17 +31,28 @@ export default function Login() {
   const onSubmit = async (values: z.infer<typeof authFormSchema>) => {
     setIsLoading(true);
     try {
-      const result = await signIn("credentials", {
-        ...values,
-        redirect: false,
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
       });
 
-      if (result?.error) {
-        setGlobalError({ message: result.error });
-      } else {
-        router.push("/admin");
+      const data = await res.json();
+
+      if (!res.ok) {
+        setGlobalError({ message: data.error || "Login gagal" });
+        return;
       }
+
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
+
+      router.push("/admin");
     } catch (error) {
+      console.error(error);
+      setGlobalError({ message: "Terjadi kesalahan" });
     } finally {
       setIsLoading(false);
     }

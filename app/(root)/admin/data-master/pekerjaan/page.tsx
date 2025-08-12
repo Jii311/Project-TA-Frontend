@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { pekerjaan } from "./columns";
 import { TableData } from "@/components/TableData";
+import api from "@/lib/axios";
 
 export default function PekerjaanPage() {
   const [data, setData] = useState<DataMaster[]>([]);
@@ -43,10 +44,8 @@ export default function PekerjaanPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("/api/data/data-master/pekerjaan", {
-        method: "GET",
-      });
-      const json = await res.json();
+      const res = await api.get("pekerjaan");
+      const json = await res.data;
       setData(json);
     } catch (err) {
       toast.error("Gagal fetch data pekerjaan");
@@ -57,21 +56,17 @@ export default function PekerjaanPage() {
 
   const onSubmit = async (formData: DataMasterSchema) => {
     setIsSubmitting(true);
-    const method = id ? "PATCH" : "POST";
-    const url = id
-      ? `/api/data/data-master/pekerjaan/${id}`
-      : "/api/data/data-master/pekerjaan";
+    const method = id ? "patch" : "post";
+    const url = id ? `pekerjaan/${id}` : "pekerjaan";
 
     try {
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      if (method === "patch") {
+        await api.patch(url, formData);
+      } else {
+        await api.post(url, formData);
+      }
 
-      if (!res.ok) throw new Error("Failed to save data");
-
-      toast.success(`pekerjaan berhasil ${id ? "diperbarui" : "ditambahkan"}`);
+      toast.success(`Pekerjaan berhasil ${id ? "diperbarui" : "ditambahkan"}`);
       reset();
       await fetchData();
       setOpen(false);

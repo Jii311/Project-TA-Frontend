@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import api from "@/lib/axios";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -24,8 +25,8 @@ export const DivisionBar = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("/api/data/karyawan");
-      const data: Employee[] = await res.json();
+      const res = await api.get("karyawan");
+      const data: Employee[] = await res.data;
 
       const counts: Record<string, number> = {};
       data.forEach((emp) => {

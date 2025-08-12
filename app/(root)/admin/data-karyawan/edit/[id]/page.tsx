@@ -17,6 +17,7 @@ import { DataKaryawan, DataAnak } from "@/types";
 import { Loader2 } from "lucide-react";
 import { editFieldGroups } from "@/lib/utils";
 import toast from "react-hot-toast";
+import api from "@/lib/axios";
 
 const defaultData = (id: string): DataKaryawan => ({
   id,
@@ -67,7 +68,6 @@ export default function EditKaryawanPage() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Emsifa data
   const [provinsiList, setProvinsiList] = useState<
     { id: string; name: string }[]
   >([]);
@@ -84,25 +84,57 @@ export default function EditKaryawanPage() {
   const [karyawanData, setKaryawanData] = useState<DataKaryawan | null>(null);
   const [childrenData, setChildrenData] = useState<DataAnak[]>([]);
 
-  // Fetch Karyawan & Options
   useEffect(() => {
+    const endpoints = {
+      agama_id: "agama",
+      kelurahan_id: "kelurahan",
+      pendidikan_id: "pendidikan",
+      jenis_kelamin_id: "jenis_kelamin",
+      pangkat_id: "pangkat",
+      jabatan_id: "jabatan",
+      pekerjaan_id: "pekerjaan",
+      golongan_id: "golongan",
+      divisi_id: "divisi",
+      lokasi_kantor_id: "lokasi_kantor",
+      lokasi_kerja_id: "lokasi_kerja",
+      status_id: "status",
+    };
+
+    const fetchOptions = async () => {
+      const results: Record<string, { value: string; label: string }[]> = {};
+      await Promise.all(
+        Object.entries(endpoints).map(async ([key, endpoint]) => {
+          try {
+            const res = await api.get(endpoint);
+            results[key] = res.data.map((item: any) => ({
+              value: item.id?.toString() || "",
+              label: item.name ?? "-",
+            }));
+          } catch (err) {
+            console.error(`Gagal ambil data ${endpoint}:`, err);
+            results[key] = [];
+          }
+        })
+      );
+      setOptions(results);
+    };
+
+    fetchOptions();
+  }, []);
+
+  useEffect(() => {
+    if (!id) return;
+
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [karyawanRes, optionsRes] = await Promise.all([
-          fetch(`/api/data/karyawan/${id}`),
-          fetch("/api/data/select-options"),
-        ]);
+        const { data } = await api.get(`karyawan/${id}`);
+        console.log("Response API:", data);
 
-        const karyawanJson = await karyawanRes.json();
-        const optionsJson = await optionsRes.json();
-
-        if (!karyawanRes.ok) throw new Error(karyawanJson.message);
-
-        setKaryawan(karyawanJson.karyawan);
-        setAnak(karyawanJson.anak || []);
-        setOptions(optionsJson.data);
-      } catch (err) {
+        setKaryawan(data);
+        setAnak(Array.isArray(data.anaks) ? data.anaks : []);
+      } catch (err: any) {
+        console.error("Error ambil data:", err);
         toast.error("Gagal ambil data");
         router.push("/admin/data-karyawan");
       } finally {
@@ -111,7 +143,7 @@ export default function EditKaryawanPage() {
     };
 
     fetchData();
-  }, [id, router]);
+  }, [id]);
 
   // Inisialisasi data form
   useEffect(() => {
@@ -196,12 +228,11 @@ export default function EditKaryawanPage() {
     if (!karyawanData) return;
     setIsSubmitting(true);
     try {
-      const res = await fetch(`/api/data/karyawan/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...karyawanData, anak: childrenData }),
+      const res = await api.patch(`karyawan/${id}`, {
+        ...karyawanData,
+        anak: childrenData,
       });
-      if (!res.ok) throw new Error("Gagal update data");
+      if (!res.data) throw new Error("Gagal update data");
       toast.success("Data berhasil diperbarui");
       router.push("/admin/data-karyawan");
     } catch (err) {

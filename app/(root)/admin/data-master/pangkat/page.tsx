@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { pangkat } from "./columns";
 import { TableData } from "@/components/TableData";
+import api from "@/lib/axios";
 
 export default function PangkatPage() {
   const [data, setData] = useState<DataMaster[]>([]);
@@ -43,10 +44,8 @@ export default function PangkatPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("/api/data/data-master/pangkat", {
-        method: "GET",
-      });
-      const json = await res.json();
+      const res = await api.get("pangkat");
+      const json = await res.data;
       setData(json);
     } catch (err) {
       toast.error("Gagal fetch data pangkat");
@@ -57,21 +56,17 @@ export default function PangkatPage() {
 
   const onSubmit = async (formData: DataMasterSchema) => {
     setIsSubmitting(true);
-    const method = id ? "PATCH" : "POST";
-    const url = id
-      ? `/api/data/data-master/pangkat/${id}`
-      : "/api/data/data-master/pangkat";
+    const method = id ? "patch" : "post";
+    const url = id ? `pangkat/${id}` : "pangkat";
 
     try {
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      if (method === "patch") {
+        await api.patch(url, formData);
+      } else {
+        await api.post(url, formData);
+      }
 
-      if (!res.ok) throw new Error("Failed to save data");
-
-      toast.success(`pangkat berhasil ${id ? "diperbarui" : "ditambahkan"}`);
+      toast.success(`Pangkat berhasil ${id ? "diperbarui" : "ditambahkan"}`);
       reset();
       await fetchData();
       setOpen(false);

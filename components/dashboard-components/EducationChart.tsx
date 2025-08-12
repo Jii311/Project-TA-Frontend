@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
+import api from "@/lib/axios";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -18,8 +19,8 @@ export const EducationChart = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const res = await fetch("/api/data/karyawan");
-        const data: Employee[] = await res.json();
+        const res = await api.get("karyawan");
+        const data: Employee[] = await res.data;
 
         const counts = data.reduce((acc: Record<string, number>, e) => {
           const edu = e.pendidikan?.name || "Unknown";

@@ -1,5 +1,6 @@
 "use client";
 
+import api from "@/lib/axios";
 import { DataMaster } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, Trash2 } from "lucide-react";
@@ -26,11 +27,9 @@ export const divisi = ({
 
       const handleDelete = async () => {
         try {
-          const res = await fetch(`/api/data/data-master/divisi/${data.id}`, {
-            method: "DELETE",
-          });
+          const res = await api.delete(`divisi/${data.id}`);
 
-          if (!res.ok) throw new Error("Failed to delete");
+          if (!res.data) throw new Error("Failed to delete");
 
           toast.success("Divisi deleted successfully");
           await fetchData();
