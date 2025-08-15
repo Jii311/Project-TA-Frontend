@@ -98,6 +98,7 @@ export default function IzinPage() {
             onClick={() => setSelectedIzin(item)}
             key={item.id}
             className="text-left"
+            title={`Lihat detail izin untuk ${item.user_id.name}`}
           >
             <List
               nama={item.user_id.name}
