@@ -62,7 +62,7 @@ const CustomSideBar = () => {
               <SidebarMenu className="flex flex-col gap-2">
                 {adminSidebarLinks.map((item, index) => {
                   const isActive = pathname === item.route;
-                  return index === 1 ? (
+                  return item.dropdownOptions ? (
                     <SidebarMenu key={item.label}>
                       <Collapsible
                         defaultOpen={false}

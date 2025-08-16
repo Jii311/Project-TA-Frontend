@@ -34,6 +34,10 @@ export const adminSidebarLinks = [
     icon: <FileText />,
     route: "/admin/izin",
     label: "Izin",
+    dropdownOptions: [
+      { label: "Pengajuan Izin", route: "/admin/izin" },
+      { label: "Riwayat Izin", route: "/admin/izin/riwayat" },
+    ],
   },
   {
     icon: <User />,
