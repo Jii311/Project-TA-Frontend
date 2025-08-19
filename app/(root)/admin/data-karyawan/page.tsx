@@ -17,7 +17,10 @@ export default function Page() {
       setLoading(true);
       try {
         const res = await api.get("/karyawan");
-        setKaryawanData(res.data);
+        const filtered = res.data.filter(
+          (item: DataKaryawan) => !item.email?.includes("admin@example.com")
+        );
+        setKaryawanData(filtered);
       } catch (error) {
         console.error("Gagal fetch karyawan data:", error);
         toast.error("Gagal mengambil data karyawan");

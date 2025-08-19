@@ -79,15 +79,16 @@ export type DataIzin = {
   bukti_foto: string | null;
   tanggal: string;
   tanggal_akhir: string;
-  terverifikasi: boolean | null;
+  terverifikasi: string | null;
 };
 
 export type DataRegisterUser = {
   id: string;
-  nama: string;
-  email: string;
-  password: string;
-  edit: string;
+  karyawan_id: {
+    id: string;
+    name: string;
+    email: string;
+  };
 };
 
 interface PaginationProps {
@@ -104,6 +105,7 @@ export type DataAbsensi = {
   clock_in_time: string;
   clock_out_time: string;
   bukti_foto: string;
+  foto_pulang: string;
   status: "Tepat Waktu" | "Terlambat" | "Izin";
 };
 

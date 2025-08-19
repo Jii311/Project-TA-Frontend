@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import api from "@/lib/axios";
+import { Skeleton } from "../ui/skeleton";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -15,6 +16,7 @@ interface Employee {
 
 export const EducationChart = () => {
   const [eduCounts, setEduCounts] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -31,6 +33,8 @@ export const EducationChart = () => {
         setEduCounts(counts);
       } catch (err) {
         console.error("Failed to fetch employees:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -59,6 +63,10 @@ export const EducationChart = () => {
       },
     ],
   };
+
+  if (loading) {
+    return <Skeleton className="h-66 w-full rounded-lg" />;
+  }
 
   return (
     <div className="flex flex-col gap-2 items-center p-3 rounded-lg w-full border shadow">

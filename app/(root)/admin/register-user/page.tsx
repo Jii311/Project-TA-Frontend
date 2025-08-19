@@ -9,7 +9,7 @@ import { ArrowDown, Loader2 } from "lucide-react";
 
 import { userFormSchema, FormSchema } from "@/lib/zod";
 import { cn } from "@/lib/utils";
-import { DataKaryawan } from "@/types";
+import { DataKaryawan, DataRegisterUser } from "@/types";
 import { TableData } from "@/components/TableData";
 import { dataRegisterUser } from "./columns";
 import {
@@ -71,8 +71,17 @@ export default function RegisterUserPage() {
           api.get("karyawan"),
         ]);
 
-        setUsers(usersRes.data);
-        setKaryawans(karyawanRes.data);
+        const filteredUsers = usersRes.data.filter(
+          (item: DataRegisterUser) =>
+            item.karyawan_id.email !== "admin@example.com"
+        );
+
+        const filteredKaryawans = karyawanRes.data.filter(
+          (item: DataKaryawan) => item.email !== "admin@example.com"
+        );
+
+        setUsers(filteredUsers);
+        setKaryawans(filteredKaryawans);
       } catch (err) {
         console.error("Gagal ambil data:", err);
         toast.error("Gagal ambil data");

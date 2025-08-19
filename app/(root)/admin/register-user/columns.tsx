@@ -5,11 +5,13 @@ import { ColumnDef } from "@tanstack/react-table";
 
 export const dataRegisterUser: ColumnDef<DataRegisterUser>[] = [
   {
-    accessorKey: "name",
+    accessorFn: (row) => row.karyawan_id.name,
+    id: "name",
     header: "Nama",
   },
   {
-    accessorKey: "email",
+    accessorFn: (row) => row.karyawan_id.email,
+    id: "email",
     header: "Akun",
   },
   // {

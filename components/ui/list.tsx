@@ -1,5 +1,4 @@
 import React from "react";
-import { ArrowRight } from "lucide-react";
 
 interface ListProps {
   nama: string;
@@ -28,8 +27,18 @@ const List: React.FC<ListProps> = ({
         <span className="text-sm text-gray-500">Tanggal</span>
         <span className="text-black font-semibold">{tanggal}</span>
       </div>
-      <div className="flex justify-end items-center">
-        <ArrowRight className="text-gray-600" />
+      <div className="flex justify-end gap-1">
+        <span
+          className={`w-fit px-2 py-1 text-xs font-semibold rounded-sm uppercase ${
+            terverifikasi?.toLowerCase() === "disetujui"
+              ? "bg-green-100 text-green-600"
+              : terverifikasi?.toLowerCase() === "ditolak"
+              ? "bg-red-100 text-red-600"
+              : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {terverifikasi}
+        </span>
       </div>
     </div>
   );

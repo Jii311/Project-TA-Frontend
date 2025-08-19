@@ -14,6 +14,17 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
 } from "./ui/sidebar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { adminSidebarLinks } from "@/constants";
 import Link from "next/link";
 import Image from "next/image";
@@ -110,14 +121,34 @@ const CustomSideBar = () => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <Button
-          type="button"
-          onClick={handleSignOut}
-          className="flex w-full justify-start shadow-none gap-2.5 p-3 mb-5 text-[1rem] rounded-lg transition font-semibold bg-transparent text-[#F05151]"
-        >
-          <LogOut className="size-[24px]" />
-          Log Out
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              type="button"
+              className="flex w-full justify-start shadow-none gap-2.5 p-3 mb-5 text-[1rem] rounded-lg transition font-semibold bg-transparent text-[#F05151]"
+            >
+              <LogOut className="size-[24px]" />
+              Log Out
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Yakin mau keluar?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Kamu akan diarahkan kembali ke halaman login.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Batal</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleSignOut}
+                className="bg-red-500 hover:bg-red-600"
+              >
+                Keluar
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </SidebarFooter>
     </Sidebar>
   );

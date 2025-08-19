@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { GenderChart } from "./GenderChart";
 import api from "@/lib/axios";
+import { Skeleton } from "../ui/skeleton";
 
 export const GenderBox = () => {
   const [genderData, setGenderData] = useState<number[]>([0, 0]);
+  const [loading, setLoading] = useState(true);
 
   const [totalEmployees, setTotalEmployees] = useState(0);
 
@@ -29,11 +31,17 @@ export const GenderBox = () => {
         setTotalEmployees(data.length);
       } catch (error) {
         console.error("❌ Gagal ambil data karyawan:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchKaryawan();
   }, []);
+
+  if (loading) {
+    return <Skeleton className="h-66 w-full rounded-lg" />;
+  }
 
   return (
     <div className="flex flex-col gap-2 items-center p-3 rounded-lg w-full border shadow">

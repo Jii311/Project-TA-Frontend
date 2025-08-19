@@ -30,6 +30,7 @@ export default function AbsensiPage() {
 
   const [showDialog, setShowDialog] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
+  const [selectedFotoPulang, setSelectedFotoPulang] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
 
   const filteredData = data
@@ -45,10 +46,12 @@ export default function AbsensiPage() {
         new Date(b.originalDate).getTime() - new Date(a.originalDate).getTime()
     );
 
-  const handlebukti_fotoClick = (imageUrl: string) => {
-    console.log("🖼️ Klik Foto:", imageUrl);
-    setSelectedImage(imageUrl);
+  const handlebukti_fotoClick = (fotoDatang: string, fotoPulang?: string) => {
+    setSelectedImage(fotoDatang);
+    setSelectedFotoPulang(fotoPulang || "");
     setShowDialog(true);
+    console.log("Foto datang:", fotoDatang);
+    console.log("Foto pulang:", fotoPulang ?? "Belum clock-out");
   };
 
   useEffect(() => {
@@ -71,6 +74,9 @@ export default function AbsensiPage() {
             : "--:--",
           status: item.status_absensi?.name || "",
           bukti_foto: `${process.env.NEXT_PUBLIC_PATH_URL}${item.bukti_foto}`,
+          foto_pulang: item.foto_pulang
+            ? `${process.env.NEXT_PUBLIC_PATH_URL}${item.foto_pulang}`
+            : null,
         }));
 
         setData(mappedData);
@@ -101,6 +107,7 @@ export default function AbsensiPage() {
         open={showDialog}
         onClose={() => setShowDialog(false)}
         imageUrl={selectedImage}
+        imageUrlPulang={selectedFotoPulang}
       />
     </>
   );

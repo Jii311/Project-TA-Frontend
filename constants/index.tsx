@@ -1,4 +1,12 @@
-import { Clock, Database, FileText, Home, User, UserPlus } from "lucide-react";
+import {
+  Clock,
+  Database,
+  FileCheck,
+  FileText,
+  Home,
+  User,
+  UserPlus,
+} from "lucide-react";
 
 export const adminSidebarLinks = [
   {
@@ -34,6 +42,11 @@ export const adminSidebarLinks = [
     icon: <FileText />,
     route: "/admin/izin",
     label: "Izin",
+  },
+  {
+    icon: <FileCheck />,
+    route: "/admin/izin-terverifikasi",
+    label: "Izin Terverifikasi",
   },
   {
     icon: <User />,

@@ -48,11 +48,21 @@ export default function Login() {
 
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("refresh_token", data.refresh_token);
+      localStorage.setItem("roles", JSON.stringify(data.roles || []));
+      localStorage.setItem("user_id", data.user_id);
+      localStorage.setItem("name", data.name);
 
-      router.push("/admin");
+      const roles: string[] = data.roles || [];
+      if (roles.includes("admin")) {
+        router.push("/admin");
+        toast.success("Login berhasil, selamat datang!");
+      } else {
+        router.push("/login");
+        toast.error("Anda tidak memiliki akses");
+      }
     } catch (error) {
       console.error(error);
-      setGlobalError({ message: "Terjadi kesalahan" });
+      setGlobalError({ message: "Email atau Password salah" });
     } finally {
       setIsLoading(false);
     }

@@ -42,7 +42,7 @@ function getStatusStyle(status: string) {
 }
 
 export const absensi = (
-  handlePhotoClick: (url: string) => void
+  handlePhotoClick: (fotoDatang: string, fotoPulang?: string) => void
 ): ColumnDef<DataAbsensi>[] => [
   {
     accessorKey: "name",
@@ -84,11 +84,14 @@ export const absensi = (
     header: "Foto",
     cell: ({ row }) => {
       const imageUrl = row.original.bukti_foto;
+      const imageUrlPulang = row.original.foto_pulang || null;
 
       return imageUrl ? (
         <Image
           className="cursor-pointer w-4 h-4"
-          onClick={() => handlePhotoClick(imageUrl)}
+          onClick={() =>
+            handlePhotoClick(imageUrl, imageUrlPulang ?? undefined)
+          }
         />
       ) : (
         <span className="text-gray-400 italic text-xs">Kosong</span>
