@@ -1,28 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { TableData } from "@/components/TableData";
-import { absensi } from "./columns";
+import { absensi, mapAbsensiData } from "./columns";
 import { DataAbsensi } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PhotoDialog } from "@/components/PhotoDialog";
 import api from "@/lib/axios";
-
-function formatTime(datetime: string): string {
-  const date = new Date(datetime);
-  return date.toLocaleString("id-ID", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function formatDateTime(datetime: string): string {
-  const date = new Date(datetime);
-  return date.toLocaleString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
 
 export default function AbsensiPage() {
   const [data, setData] = useState<DataAbsensi[]>([]);
@@ -60,24 +43,7 @@ export default function AbsensiPage() {
         const res = await api.get("absensi");
         if (!res.data) throw new Error("Gagal ambil data absensi");
 
-        const rawData = await res.data;
-        const mappedData = rawData.map((item: any) => ({
-          id: item.id,
-          name: item.user_id?.name || "-",
-          originalDate: item.tanggal,
-          tanggal: formatDateTime(item.tanggal),
-          clock_in_time: item.clock_in_time
-            ? formatTime(item.clock_in_time)
-            : "--:--",
-          clock_out_time: item.clock_out_time
-            ? formatTime(item.clock_out_time)
-            : "--:--",
-          status: item.status_absensi?.name || "",
-          bukti_foto: `${process.env.NEXT_PUBLIC_PATH_URL}${item.bukti_foto}`,
-          foto_pulang: item.foto_pulang
-            ? `${process.env.NEXT_PUBLIC_PATH_URL}${item.foto_pulang}`
-            : null,
-        }));
+        const mappedData = mapAbsensiData(res.data);
 
         setData(mappedData);
       } catch (err) {

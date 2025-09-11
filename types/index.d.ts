@@ -98,16 +98,17 @@ interface PaginationProps {
   setCurrentPage: any;
 }
 
-export type DataAbsensi = {
+export interface DataAbsensi {
   id: string;
   name: string;
+  originalDate: string;
   tanggal: string;
   clock_in_time: string;
   clock_out_time: string;
+  status: string;
   bukti_foto: string;
-  foto_pulang: string;
-  status: "Tepat Waktu" | "Terlambat" | "Izin";
-};
+  foto_pulang: string | null;
+}
 
 export type DataMaster = {
   id: string;
@@ -121,6 +122,7 @@ export type LokasiKantor = {
   alamat: string;
   latitude: number;
   longitude: number;
+  radius: number;
 };
 
 declare interface TextFieldProps {

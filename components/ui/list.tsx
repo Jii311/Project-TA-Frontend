@@ -24,7 +24,7 @@ const List: React.FC<ListProps> = ({
         <span className="text-black font-semibold">{kepentingan}</span>
       </div>
       <div className="flex flex-col">
-        <span className="text-sm text-gray-500">Tanggal</span>
+        <span className="text-sm text-gray-500">Tanggal pengajuan</span>
         <span className="text-black font-semibold">{tanggal}</span>
       </div>
       <div className="flex justify-end gap-1">

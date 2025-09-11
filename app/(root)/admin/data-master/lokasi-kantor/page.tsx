@@ -13,19 +13,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import {
-  dataMasterSchema,
-  DataMasterSchema,
-  lokasiKantorSchema,
-  LokasiKantorSchema,
-} from "@/lib/zod";
-import { DataMaster, LokasiKantor } from "@/types";
+import { lokasiKantorSchema, LokasiKantorSchema } from "@/lib/zod";
+import { LokasiKantor } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { lokasiKantor } from "./columns";
 import { TableData } from "@/components/TableData";
+import MapPicker from "@/components/MapPicker";
 import api from "@/lib/axios";
 
 export default function LokasiKantorPage() {
@@ -34,6 +30,9 @@ export default function LokasiKantorPage() {
   const [open, setOpen] = useState(false);
   const [id, setid] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
+    null
+  );
 
   const {
     register,
@@ -43,7 +42,13 @@ export default function LokasiKantorPage() {
     formState: { errors },
   } = useForm<LokasiKantorSchema>({
     resolver: zodResolver(lokasiKantorSchema),
-    defaultValues: { name: "", alamat: "", latitude: "", longitude: "" },
+    defaultValues: {
+      name: "",
+      alamat: "",
+      latitude: "",
+      longitude: "",
+      radius: "",
+    },
     mode: "onChange",
   });
 
@@ -69,6 +74,7 @@ export default function LokasiKantorPage() {
       alamat: formData.alamat,
       latitude: parseFloat(formData.latitude),
       longitude: parseFloat(formData.longitude),
+      radius: parseInt(formData.radius),
     };
 
     try {
@@ -98,6 +104,11 @@ export default function LokasiKantorPage() {
     setValue("alamat", item.alamat);
     setValue("latitude", item.latitude?.toString() || "");
     setValue("longitude", item.longitude?.toString() || "");
+    setCoords({
+      lat: item.latitude || 0,
+      lng: item.longitude || 0,
+    });
+    setValue("radius", item.radius?.toString() || "");
     setOpen(true);
   };
 
@@ -114,6 +125,7 @@ export default function LokasiKantorPage() {
               onClick={() => {
                 setid(null);
                 reset();
+                setCoords({ lat: -6.1754049, lng: 106.827168 });
               }}
               className="bg-[#17876E]"
             >
@@ -153,30 +165,47 @@ export default function LokasiKantorPage() {
                 )}
               </div>
 
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="latitude">Latitude</Label>
-                <Input
-                  id="latiude"
-                  placeholder="-6.200000"
-                  {...register("latitude")}
-                />
-                {errors.latitude && (
-                  <p className="text-sm text-red-500">
-                    {errors.latitude.message}
-                  </p>
-                )}
+              <MapPicker
+                onChange={(lat, lng) => {
+                  setCoords({ lat, lng });
+                  setValue("latitude", lat.toString());
+                  setValue("longitude", lng.toString());
+                }}
+                initialPosition={coords ? [coords.lat, coords.lng] : undefined}
+              />
+
+              <div className="flex gap-4">
+                <div className="flex flex-col gap-3 w-full">
+                  <Label htmlFor="latitude">Latitude</Label>
+                  <Input
+                    id="latitude"
+                    placeholder="-6.200000"
+                    readOnly
+                    {...register("latitude")}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-3 w-full">
+                  <Label htmlFor="longitude">Longitude</Label>
+                  <Input
+                    id="longitude"
+                    placeholder="106.816666"
+                    readOnly
+                    {...register("longitude")}
+                  />
+                </div>
               </div>
 
               <div className="flex flex-col gap-3">
-                <Label htmlFor="longitude">Longitude</Label>
+                <Label htmlFor="radius">Radius absensi</Label>
                 <Input
-                  id="longitude"
-                  placeholder="106.816666"
-                  {...register("longitude")}
+                  id="radius"
+                  placeholder="100 (dalam meter)"
+                  {...register("radius")}
                 />
-                {errors.longitude && (
+                {errors.radius && (
                   <p className="text-sm text-red-500">
-                    {errors.longitude.message}
+                    {errors.radius.message}
                   </p>
                 )}
               </div>

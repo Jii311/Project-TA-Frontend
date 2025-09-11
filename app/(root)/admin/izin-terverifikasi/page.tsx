@@ -17,6 +17,7 @@ import api from "@/lib/axios";
 export default function ResolvedIzinPage() {
   const [izinData, setIzinData] = useState<DataIzin[]>([]);
   const [selectedIzin, setSelectedIzin] = useState<DataIzin | null>(null);
+  const [openImage, setOpenImage] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -120,6 +121,7 @@ export default function ResolvedIzinPage() {
                   src={`${process.env.NEXT_PUBLIC_PATH_URL}${selectedIzin.bukti_foto}`}
                   alt="Bukti Izin"
                   className="mt-2 w-full max-h-64 object-contain rounded-lg border"
+                  onClick={() => setOpenImage(true)}
                 />
               ) : (
                 <p className="text-sm text-gray-500 mt-2">
@@ -128,6 +130,16 @@ export default function ResolvedIzinPage() {
               )}
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openImage} onOpenChange={setOpenImage}>
+        <DialogContent className="max-w-screen max-h-screen p-0 bg-amber-50">
+          <img
+            src={`${process.env.NEXT_PUBLIC_PATH_URL}${selectedIzin?.bukti_foto}`}
+            alt="Bukti Izin Fullscreen"
+            className="w-full h-full object-contain rounded-lg"
+          />
         </DialogContent>
       </Dialog>
     </div>

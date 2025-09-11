@@ -59,6 +59,8 @@ export default function Login() {
       } else {
         router.push("/login");
         toast.error("Anda tidak memiliki akses");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
       }
     } catch (error) {
       console.error(error);

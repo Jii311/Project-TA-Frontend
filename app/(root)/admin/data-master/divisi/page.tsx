@@ -100,7 +100,7 @@ export default function DivisiPage() {
               }}
               className="bg-[#17876E]"
             >
-              ambah data divisi
+              Tambah data divisi
             </Button>
           </DialogTrigger>
           <DialogContent>

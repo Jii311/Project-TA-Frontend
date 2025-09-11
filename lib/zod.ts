@@ -26,6 +26,7 @@ export const lokasiKantorSchema = dataMasterSchema.extend({
   alamat: z.string().min(1, "Alamat wajib diisi"),
   latitude: z.string().min(1, "Latitude wajib diisi"),
   longitude: z.string().min(1, "Longitude wajib diisi"),
+  radius: z.string().min(1, "Radius wajib diisi"),
 });
 
 export type DataMasterSchema = z.infer<typeof dataMasterSchema>;

@@ -34,8 +34,13 @@ export const pekerjaan = ({
           toast.success("Pekerjaan deleted successfully");
           await fetchData();
           router.refresh();
-        } catch (error) {
-          toast.error("Failed to delete pekerjaan");
+        } catch (error: any) {
+          const backendMessage =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Something went wrong";
+
+          toast.error(backendMessage);
           console.error(error);
         }
       };

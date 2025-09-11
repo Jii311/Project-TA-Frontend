@@ -26,7 +26,7 @@ export function CustomPagination<TData>({
   const pageCount = table.getPageCount();
 
   return (
-    <Pagination className="w-full justify-end bg-[#F5F5F5] rounded-md p-2 mt-4">
+    <Pagination className="w-full justify-end bg-[#F5F5F5] rounded-md p-2">
       <PaginationContent className="space-x-2">
         <PaginationItem>
           <Button
